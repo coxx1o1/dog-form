@@ -2,12 +2,12 @@ import Message from "../models/message.js";
 
 const createMessage = async (req, res) => {
   try {
-    const { name, email, subject, message } = req.body;
-    if (!name || !email || !message) {
-      return res.status(400).json({ error: "Name, email, and message are required." });
+    const { name, email, subject, livingType, city, landmark, message } = req.body;
+    if (!name || !email || !livingType || !city || !message) {
+      return res.status(400).json({ error: "Name, email, living type, city, and message are required." });
     }
 
-    const newMessage = new Message({ name, email, subject, message });
+    const newMessage = new Message({ name, email, subject, livingType, city, landmark, message });
     await newMessage.save();
     res.status(201).json(newMessage);
   } catch (error) {

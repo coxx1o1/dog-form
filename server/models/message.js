@@ -4,6 +4,9 @@ const messageSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true },
   subject: { type: String },
+  livingType: { type: String, required: true },
+  city: { type: String, required: true },
+  landmark: { type: String },
   message: { type: String, required: true },
 }, { timestamps: true });
 

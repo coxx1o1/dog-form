@@ -1,0 +1,47 @@
+# Gitignore for a full-stack project with client and server subdirectories
+
+# Dependencies
+/node_modules
+/client/node_modules
+/server/node_modules
+
+# Production build artifacts
+/client/dist
+/client/build # In case 'build' is used instead of 'dist'
+/server/build
+/server/dist # In case 'dist' is used for server output
+
+# Environment variables
+.env
+/client/.env # Explicitly ignore client .env if it exists
+/server/.env
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+/server/logs
+
+# IDEs and OS files
+.vscode/
+.idea/
+.DS_Store
+*.suo
+*.user
+*.bak
+*.orig
+*.swp
+*~
+*.log
+.eslintcache
+/client/.vite/ # Vite cache directory
+
+# Test coverage reports
+/coverage
+/client/coverage
+/server/coverage
+
+# Misc
+.cache/
+.bytenode/

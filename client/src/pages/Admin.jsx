@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { fetchMessages, deleteMessage } from "../services/api";
+import AddDog from "../components/addDog";
 
 export default function Admin() {
   const [messages, setMessages] = useState([]);
@@ -36,6 +37,11 @@ export default function Admin() {
     }
   }
 
+  //addDog for admin page
+  const [showAddDog, setShowAddDog] = useState(false);
+  
+
+
   // 🔐 PASSWORD SCREEN
   if (!isUnlocked) {
     return (
@@ -44,9 +50,7 @@ export default function Admin() {
           onSubmit={handleLogin}
           className="bg-white p-8 rounded-xl shadow-lg w-[350px]"
         >
-          <h2 className="text-2xl font-bold mb-6 text-center">
-            Admin Login
-          </h2>
+          <h2 className="text-2xl font-bold mb-6 text-center">Admin Login</h2>
 
           <input
             type="password"
@@ -56,9 +60,7 @@ export default function Admin() {
             onChange={(e) => setPassword(e.target.value)}
           />
 
-          {error && (
-            <p className="text-red-500 text-sm mb-3">{error}</p>
-          )}
+          {error && <p className="text-red-500 text-sm mb-3">{error}</p>}
 
           <button
             type="submit"
@@ -79,6 +81,14 @@ export default function Admin() {
   return (
     <div className="min-h-screen bg-gray-100 p-8">
       <h2 className="text-3xl font-bold mb-6">Admin Dashboard</h2>
+      <button className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-700"
+      onClick={() => setShowAddDog(true)}>Add Dog</button>
+      {showAddDog && (
+        <div className="fixed inset-0 bg-black/50 flex justify-center items-center">
+          <AddDog  onClose={() => setShowAddDog(false)} />
+ 
+        </div>
+      )}
 
       {messages.length === 0 && (
         <p className="text-gray-500">No messages yet</p>
@@ -91,9 +101,15 @@ export default function Admin() {
             className="bg-white p-5 rounded-xl shadow-sm border"
           >
             <div className="grid gap-1 text-sm">
-              <p><b>Name:</b> {msg.name}</p>
-              <p><b>Email:</b> {msg.email}</p>
-              <p><b>Subject:</b> {msg.subject}</p>
+              <p>
+                <b>Name:</b> {msg.name}
+              </p>
+              <p>
+                <b>Email:</b> {msg.email}
+              </p>
+              <p>
+                <b>Subject:</b> {msg.subject}
+              </p>
               <p className="text-gray-700">{msg.message}</p>
             </div>
 

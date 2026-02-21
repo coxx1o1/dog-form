@@ -11,7 +11,8 @@ const createMessage = async (req, res) => {
     await newMessage.save();
     res.status(201).json(newMessage);
   } catch (error) {
-    res.status(500).json({ error: "Server error" });
+    console.error("Error creating message:", error); // Log the actual error
+    res.status(500).json({ error: "Server error", details: error.message });
   }
 };
 

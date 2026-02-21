@@ -2,16 +2,17 @@ import Message from "../models/message.js";
 
 const createMessage = async (req, res) => {
   try {
-    const { name, email, subject, message } = req.body;
-    if (!name || !email || !message) {
-      return res.status(400).json({ error: "Name, email, and message are required." });
+    const { name, email, subject, message, livingType, city } = req.body;
+    if (!name || !email || !message || !livingType || !city) {
+      return res.status(400).json({ error: "Name, email, message, livingType, and city are required." });
     }
 
-    const newMessage = new Message({ name, email, subject, message });
+    const newMessage = new Message({ name, email, subject, message, livingType, city });
     await newMessage.save();
     res.status(201).json(newMessage);
   } catch (error) {
-    res.status(500).json({ error: "Server error" });
+    console.error("Error creating message:", error); // Log the actual error
+    res.status(500).json({ error: "Server error", details: error.message });
   }
 };
 

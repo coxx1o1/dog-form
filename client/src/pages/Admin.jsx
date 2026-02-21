@@ -1,21 +1,20 @@
 import { useEffect, useState } from "react";
 import { fetchMessages, deleteMessage } from "../services/api";
-import { login, logout, isAuthenticated } from "../services/authService"; // Import authService functions
+import { login, logout, isAuthenticated } from "../services/authService";
 import AddDog from "../components/addDog";
 
 export default function Admin() {
   const [messages, setMessages] = useState([]);
   const [password, setPassword] = useState("");
-  const [isUnlocked, setIsUnlocked] = useState(false); // Managed by token presence
+  const [isUnlocked, setIsUnlocked] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    // Check if authenticated on component mount
     if (isAuthenticated()) {
       setIsUnlocked(true);
       loadMessages();
     }
-  }, []); // Run once on mount
+  }, []);
 
   useEffect(() => {
     if (isUnlocked) {
@@ -29,8 +28,7 @@ export default function Admin() {
       setMessages(data);
     } catch (error) {
       console.error("Failed to load messages:", error);
-      // If authentication fails, log out and lock the admin page
-      if (error.message === "Unauthorized") { // Assuming API throws 'Unauthorized' for invalid token
+      if (error.message === "Unauthorized") {
         handleLogout();
       }
     }
@@ -47,7 +45,6 @@ export default function Admin() {
       await login(password);
       setIsUnlocked(true);
       setError("");
-      // Optionally reload messages after successful login
       loadMessages();
     } catch (err) {
       setError(err.message || "Login failed");
@@ -58,42 +55,40 @@ export default function Admin() {
   function handleLogout() {
     logout();
     setIsUnlocked(false);
-    setPassword(""); // Clear password field
-    setMessages([]); // Clear messages on logout
+    setPassword("");
+    setMessages([]);
   }
 
-  //addDog for admin page
   const [showAddDog, setShowAddDog] = useState(false);
-
 
   // 🔐 PASSWORD SCREEN
   if (!isUnlocked) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <form
           onSubmit={handleLogin}
-          className="bg-white p-8 rounded-xl shadow-lg w-[350px]"
+          className="bg-white p-10 rounded-2xl shadow-xl w-[400px] space-y-6"
         >
-          <h2 className="text-2xl font-bold mb-6 text-center">Admin Login</h2>
+          <h2 className="text-3xl font-extrabold mb-4 text-center text-gray-900">Admin Login</h2>
 
           <input
             type="password"
             placeholder="Enter admin password"
-            className="w-full border p-3 rounded mb-4 focus:outline-none focus:ring"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition duration-200 ease-in-out"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
 
-          {error && <p className="text-red-500 text-sm mb-3">{error}</p>}
+          {error && <p className="text-red-600 text-sm mb-3 text-center">{error}</p>}
 
           <button
             type="submit"
-            className="w-full bg-black text-white py-3 rounded hover:bg-gray-800"
+            className="w-full bg-indigo-600 text-white font-bold py-3 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition duration-200 ease-in-out"
           >
             Enter Dashboard
           </button>
 
-          <p className="text-xs text-gray-400 mt-4 text-center">
+          <p className="text-xs text-gray-500 mt-4 text-center">
             Uses backend authentication
           </p>
         </form>
@@ -103,50 +98,57 @@ export default function Admin() {
 
   // ✅ ADMIN DASHBOARD
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-3xl font-bold">Admin Dashboard</h2>
-        <button
-          onClick={handleLogout}
-          className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-        >
-          Logout
-        </button>
+    <div className="min-h-screen bg-gray-50 p-8 md:p-12">
+      <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+        <h2 className="text-4xl font-extrabold text-gray-900">Admin Dashboard</h2>
+        <div className="flex gap-4">
+          <button
+            onClick={() => setShowAddDog(true)}
+            className="bg-green-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition duration-200 ease-in-out"
+          >
+            Add Dog
+          </button>
+          <button
+            onClick={handleLogout}
+            className="bg-red-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition duration-200 ease-in-out"
+          >
+            Logout
+          </button>
+        </div>
       </div>
-      <button className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-700"
-      onClick={() => setShowAddDog(true)}>Add Dog</button>
+
       {showAddDog && (
-        <div className="fixed inset-0 bg-black/50 flex justify-center items-center">
-          <AddDog  onClose={() => setShowAddDog(false)} />
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4">
+          <AddDog onClose={() => setShowAddDog(false)} />
         </div>
       )}
 
       {messages.length === 0 && (
-        <p className="text-gray-500">No messages yet</p>
+        <p className="text-center text-gray-600 text-lg mt-8">No messages yet.</p>
       )}
 
-      <div className="grid gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {messages.map((msg) => (
           <div
             key={msg._id}
-            className="bg-white p-5 rounded-xl shadow-sm border"
+            className="bg-white p-6 rounded-xl shadow-lg border border-gray-200 hover:shadow-xl transition-shadow duration-200 ease-in-out"
           >
-            <div className="grid gap-1 text-sm">
-              <p>
-                <b>Name:</b> {msg.name}
+            <div className="space-y-3 text-gray-800">
+              <p className="text-sm">
+                <b className="font-semibold text-gray-900">Name:</b> {msg.name}
               </p>
-              <p>
-                <b>Email:</b> {msg.email}
+              <p className="text-sm">
+                <b className="font-semibold text-gray-900">Email:</b> {msg.email}
               </p>
-              <p>
-                <b>Subject:</b> {msg.subject}
+              <p className="text-sm">
+                <b className="font-semibold text-gray-900">Subject:</b> {msg.subject}
               </p>
-              <p className="text-gray-700">{msg.message}</p>
+              <p className="text-base text-gray-700 mt-2">{msg.message}</p>
             </div>
 
             <button
               onClick={() => handleDelete(msg._id)}
-              className="mt-4 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+              className="mt-6 bg-red-600 text-white font-semibold px-5 py-2 rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition duration-200 ease-in-out"
             >
               Delete
             </button>
@@ -156,4 +158,5 @@ export default function Admin() {
     </div>
   );
 }
+
 

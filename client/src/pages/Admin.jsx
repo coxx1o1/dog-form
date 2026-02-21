@@ -1,14 +1,21 @@
 import { useEffect, useState } from "react";
 import { fetchMessages, deleteMessage } from "../services/api";
+import { login, logout, isAuthenticated } from "../services/authService"; // Import authService functions
 import AddDog from "../components/addDog";
 
 export default function Admin() {
   const [messages, setMessages] = useState([]);
   const [password, setPassword] = useState("");
-  const [isUnlocked, setIsUnlocked] = useState(false);
+  const [isUnlocked, setIsUnlocked] = useState(false); // Managed by token presence
   const [error, setError] = useState("");
 
-  const ADMIN_PASSWORD = "admin123"; // UI only
+  useEffect(() => {
+    // Check if authenticated on component mount
+    if (isAuthenticated()) {
+      setIsUnlocked(true);
+      loadMessages();
+    }
+  }, []); // Run once on mount
 
   useEffect(() => {
     if (isUnlocked) {
@@ -17,8 +24,16 @@ export default function Admin() {
   }, [isUnlocked]);
 
   async function loadMessages() {
-    const data = await fetchMessages();
-    setMessages(data);
+    try {
+      const data = await fetchMessages();
+      setMessages(data);
+    } catch (error) {
+      console.error("Failed to load messages:", error);
+      // If authentication fails, log out and lock the admin page
+      if (error.message === "Unauthorized") { // Assuming API throws 'Unauthorized' for invalid token
+        handleLogout();
+      }
+    }
   }
 
   async function handleDelete(id) {
@@ -26,20 +41,29 @@ export default function Admin() {
     loadMessages();
   }
 
-  function handleLogin(e) {
+  async function handleLogin(e) {
     e.preventDefault();
-
-    if (password === ADMIN_PASSWORD) {
+    try {
+      await login(password);
       setIsUnlocked(true);
       setError("");
-    } else {
-      setError("Wrong password");
+      // Optionally reload messages after successful login
+      loadMessages();
+    } catch (err) {
+      setError(err.message || "Login failed");
+      setIsUnlocked(false);
     }
+  }
+
+  function handleLogout() {
+    logout();
+    setIsUnlocked(false);
+    setPassword(""); // Clear password field
+    setMessages([]); // Clear messages on logout
   }
 
   //addDog for admin page
   const [showAddDog, setShowAddDog] = useState(false);
-  
 
 
   // 🔐 PASSWORD SCREEN
@@ -70,7 +94,7 @@ export default function Admin() {
           </button>
 
           <p className="text-xs text-gray-400 mt-4 text-center">
-            UI only — backend auth coming later
+            Uses backend authentication
           </p>
         </form>
       </div>
@@ -80,13 +104,20 @@ export default function Admin() {
   // ✅ ADMIN DASHBOARD
   return (
     <div className="min-h-screen bg-gray-100 p-8">
-      <h2 className="text-3xl font-bold mb-6">Admin Dashboard</h2>
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-3xl font-bold">Admin Dashboard</h2>
+        <button
+          onClick={handleLogout}
+          className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+        >
+          Logout
+        </button>
+      </div>
       <button className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-700"
       onClick={() => setShowAddDog(true)}>Add Dog</button>
       {showAddDog && (
         <div className="fixed inset-0 bg-black/50 flex justify-center items-center">
           <AddDog  onClose={() => setShowAddDog(false)} />
- 
         </div>
       )}
 
@@ -125,3 +156,4 @@ export default function Admin() {
     </div>
   );
 }
+

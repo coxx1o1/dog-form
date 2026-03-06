@@ -18,7 +18,7 @@ function getAuthHeaders() {
 export async function sendMessage(data) {
   const res = await fetch(API_BASE, {
     method: "POST",
-    headers: getAuthHeaders(), // Use authenticated headers
+    headers: getAuthHeaders(),
     body: JSON.stringify(data),
   });
 
@@ -27,7 +27,8 @@ export async function sendMessage(data) {
     if (res.status === 401) {
       throw new Error("Unauthorized");
     }
-    throw new Error("Failed to send message");
+    const errorData = await res.json();
+    throw new Error(errorData.details || errorData.error || "Failed to send message");
   }
 
   return res.json();
@@ -42,7 +43,8 @@ export async function fetchMessages() {
     if (res.status === 401) {
       throw new Error("Unauthorized");
     }
-    throw new Error("Failed to fetch messages");
+    const errorData = await res.json();
+    throw new Error(errorData.details || errorData.error || "Failed to fetch messages");
   }
 
   return res.json();
@@ -58,7 +60,8 @@ export async function deleteMessage(id) {
     if (res.status === 401) {
       throw new Error("Unauthorized");
     }
-    throw new Error("Failed to delete message");
+    const errorData = await res.json();
+    throw new Error(errorData.details || errorData.error || "Failed to delete message");
   }
 }
 
@@ -74,7 +77,8 @@ export async function addDog(dogData) {
     if (res.status === 401) {
       throw new Error("Unauthorized");
     }
-    throw new Error("Failed to add dog");
+    const errorData = await res.json();
+    throw new Error(errorData.details || errorData.error || "Failed to add dog");
   }
   return res.json();
 }
@@ -88,7 +92,8 @@ export async function fetchDogs() {
     if (res.status === 401) {
       throw new Error("Unauthorized");
     }
-    throw new Error("Failed to fetch dogs");
+    const errorData = await res.json();
+    throw new Error(errorData.details || errorData.error || "Failed to fetch dogs");
   }
   return res.json();
 }
@@ -103,6 +108,7 @@ export async function deleteDog(id) {
     if (res.status === 401) {
       throw new Error("Unauthorized");
     }
-    throw new Error("Failed to delete dog");
+    const errorData = await res.json();
+    throw new Error(errorData.details || errorData.error || "Failed to delete dog");
   }
 }

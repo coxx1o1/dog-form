@@ -1,71 +1,95 @@
-import { getToken } from "./authService"; // Import getToken
+import { getToken } from "./authService";
 
-const API_BASE = "/api/messages";
-const API_DOGS = "/api/dogs"; // Define API_DOGS base for dog routes
+// Base API URL (your Render backend)
+const API_URL = "https://dog-form-jehk.onrender.com/api";
+
+const API_MESSAGES = `${API_URL}/messages`;
+const API_DOGS = `${API_URL}/dogs`;
 
 // Helper function to create authenticated headers
 function getAuthHeaders() {
   const token = getToken();
+
   if (token) {
     return {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     };
   }
-  return { "Content-Type": "application/json" };
+
+  return {
+    "Content-Type": "application/json",
+  };
 }
 
+// =======================
+// MESSAGE API CALLS
+// =======================
+
 export async function sendMessage(data) {
-  const res = await fetch(API_BASE, {
+  const res = await fetch(API_MESSAGES, {
     method: "POST",
     headers: getAuthHeaders(),
     body: JSON.stringify(data),
   });
 
   if (!res.ok) {
-    // Handle unauthorized responses more gracefully
     if (res.status === 401) {
       throw new Error("Unauthorized");
     }
+
     const errorData = await res.json();
-    throw new Error(errorData.details || errorData.error || "Failed to send message");
+    throw new Error(
+      errorData.details || errorData.error || "Failed to send message"
+    );
   }
 
   return res.json();
 }
 
 export async function fetchMessages() {
-  const res = await fetch(API_BASE, {
-    headers: getAuthHeaders(), // Use authenticated headers
+  const res = await fetch(API_MESSAGES, {
+    headers: getAuthHeaders(),
   });
 
   if (!res.ok) {
     if (res.status === 401) {
       throw new Error("Unauthorized");
     }
+
     const errorData = await res.json();
-    throw new Error(errorData.details || errorData.error || "Failed to fetch messages");
+    throw new Error(
+      errorData.details || errorData.error || "Failed to fetch messages"
+    );
   }
 
   return res.json();
 }
 
 export async function deleteMessage(id) {
-  const res = await fetch(`${API_BASE}/${id}`, {
+  const res = await fetch(`${API_MESSAGES}/${id}`, {
     method: "DELETE",
-    headers: getAuthHeaders(), // Use authenticated headers
+    headers: getAuthHeaders(),
   });
 
   if (!res.ok) {
     if (res.status === 401) {
       throw new Error("Unauthorized");
     }
+
     const errorData = await res.json();
-    throw new Error(errorData.details || errorData.error || "Failed to delete message");
+    throw new Error(
+      errorData.details || errorData.error || "Failed to delete message"
+    );
   }
+
+  return res.json();
 }
 
-// Dog-related API calls (assuming these need authentication)
+// =======================
+// DOG API CALLS
+// =======================
+
 export async function addDog(dogData) {
   const res = await fetch(API_DOGS, {
     method: "POST",
@@ -77,9 +101,13 @@ export async function addDog(dogData) {
     if (res.status === 401) {
       throw new Error("Unauthorized");
     }
+
     const errorData = await res.json();
-    throw new Error(errorData.details || errorData.error || "Failed to add dog");
+    throw new Error(
+      errorData.details || errorData.error || "Failed to add dog"
+    );
   }
+
   return res.json();
 }
 
@@ -92,9 +120,13 @@ export async function fetchDogs() {
     if (res.status === 401) {
       throw new Error("Unauthorized");
     }
+
     const errorData = await res.json();
-    throw new Error(errorData.details || errorData.error || "Failed to fetch dogs");
+    throw new Error(
+      errorData.details || errorData.error || "Failed to fetch dogs"
+    );
   }
+
   return res.json();
 }
 
@@ -108,7 +140,12 @@ export async function deleteDog(id) {
     if (res.status === 401) {
       throw new Error("Unauthorized");
     }
+
     const errorData = await res.json();
-    throw new Error(errorData.details || errorData.error || "Failed to delete dog");
+    throw new Error(
+      errorData.details || errorData.error || "Failed to delete dog"
+    );
   }
+
+  return res.json();
 }

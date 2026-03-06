@@ -9,7 +9,7 @@ import { protect } from "../middleware/authMiddleware.js"; // Import protect mid
 const router = express.Router();
 
 // Apply protect middleware to all message routes that require authentication
-router.post("/", protect, createMessage);
+router.post("/", createMessage);
 router.get("/", protect, getMessages);
 router.delete("/:id", protect, deleteMessage);
 

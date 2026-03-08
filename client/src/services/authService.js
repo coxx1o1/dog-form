@@ -1,8 +1,10 @@
 const TOKEN_KEY = "jwt_token";
 
+const API_URL = "https://dog-form-jehk.onrender.com/api";
+
 export async function login(password) {
   try {
-    const res = await fetch("/api/auth/login", {
+    const res = await fetch(`${API_URL}/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ password }),
@@ -20,19 +22,4 @@ export async function login(password) {
     console.error("Login error:", error);
     throw error;
   }
-}
-
-export function logout() {
-  localStorage.removeItem(TOKEN_KEY);
-}
-
-export function getToken() {
-  return localStorage.getItem(TOKEN_KEY);
-}
-
-export function isAuthenticated() {
-  const token = getToken();
-  // A more robust check would involve verifying the token's expiration
-  // by decoding it, but for now, just checking for presence is sufficient.
-  return !!token;
 }

@@ -23,3 +23,18 @@ export async function login(password) {
     throw error;
   }
 }
+
+export function logout() {
+  localStorage.removeItem(TOKEN_KEY);
+}
+
+export function getToken() {
+  return localStorage.getItem(TOKEN_KEY);
+}
+
+export function isAuthenticated() {
+  const token = getToken();
+  // A more robust check would involve verifying the token's expiration
+  // by decoding it, but for now, just checking for presence is sufficient.
+  return !!token;
+}

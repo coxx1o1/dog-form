@@ -83,7 +83,7 @@ export async function deleteMessage(id) {
     );
   }
 
-  return res.json();
+  return true;
 }
 
 // =======================
@@ -147,5 +147,5 @@ export async function deleteDog(id) {
     );
   }
 
-  return res.json();
+ return true;
 }
